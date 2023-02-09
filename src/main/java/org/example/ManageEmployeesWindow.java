@@ -17,6 +17,8 @@ public class ManageEmployeesWindow extends JFrame{
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
+        
+
         JPanel buttonPanel = new JPanel(new FlowLayout());
         JButton addEmployeeButton = new JButton("Nouvel employé");
         addEmployeeButton.addActionListener(new ActionListener() {

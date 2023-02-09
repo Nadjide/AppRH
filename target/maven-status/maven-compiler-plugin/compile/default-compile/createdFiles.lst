@@ -1,6 +1,7 @@
 org\example\ManageEmployeesWindow$1.class
 org\example\ManageEmployeesWindow.class
 org\example\AddEmployeeWindow.class
+org\example\AddEmployeeWindow$1.class
 org\example\Login$1.class
 org\example\MainWindow$1.class
 org\example\Login.class
