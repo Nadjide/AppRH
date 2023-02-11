@@ -61,6 +61,7 @@ public class Login {
                     ResultSet rs = stmt.executeQuery(query);
                     if (rs.next()) {
                         JOptionPane.showMessageDialog(frame, "Login successful!");
+                        frame.dispose();
                         MainWindow mainWindow = new MainWindow();
                         mainWindow.setVisible(true);
                     } else {

@@ -1,3 +1,4 @@
+org\example\ManageEmployeesWindow$2$1.class
 org\example\ManageEmployeesWindow$1.class
 org\example\ManageEmployeesWindow.class
 org\example\AddEmployeeWindow.class
@@ -7,3 +8,5 @@ org\example\MainWindow$1.class
 org\example\Login.class
 org\example\MainWindow$2.class
 org\example\MainWindow.class
+org\example\ManageEmployeesWindow$2$2.class
+org\example\ManageEmployeesWindow$2.class

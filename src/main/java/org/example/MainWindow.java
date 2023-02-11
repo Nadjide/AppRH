@@ -10,6 +10,7 @@ public class MainWindow extends JFrame{
     public MainWindow() {
         setTitle("Tableau de bord");
         setSize(600, 400);
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 

@@ -17,23 +17,25 @@ public class AddEmployeeWindow extends JFrame {
     // create a database connection
     public AddEmployeeWindow() {
         setTitle("Nouvel employé");
-        setSize(1376, 1080);
+        setSize(600, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
         setLayout(new FlowLayout());
 
-        JPanel formPanel = new JPanel(new FlowLayout());
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
         JLabel firstNameLabel = new JLabel("Prénom");
         JTextField firstNameField = new JTextField();
-        firstNameField.setPreferredSize(new Dimension(200, 30));
+        firstNameField.setMaximumSize(new Dimension(400, 50));
         JLabel lastNameLabel = new JLabel("Nom");
         JTextField lastNameField = new JTextField();
-        lastNameField.setPreferredSize(new Dimension(200, 30));
+        lastNameField.setMaximumSize(new Dimension(400, 50));
         JLabel emailLabel = new JLabel("Email");
         JTextField emailField = new JTextField();
-        emailField.setPreferredSize(new Dimension(200, 30));
+        emailField.setMaximumSize(new Dimension(400, 50));
         JLabel salaryLabel = new JLabel("Salaire");
         JTextField salaryField = new JTextField();
-        salaryField.setPreferredSize(new Dimension(200, 30));
+        salaryField.setMaximumSize(new Dimension(400, 50));
         formPanel.add(firstNameLabel);
         formPanel.add(firstNameField);
         formPanel.add(lastNameLabel);
