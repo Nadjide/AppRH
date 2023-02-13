@@ -14,7 +14,6 @@ import java.sql.Statement;
 
 public class AddEmployeeWindow extends JFrame {
 
-    // create a database connection
     public AddEmployeeWindow() {
         setTitle("Nouvel employé");
         setSize(600, 400);
@@ -47,6 +46,7 @@ public class AddEmployeeWindow extends JFrame {
         add(formPanel);
 
         JButton submitButton = new JButton("Ajouter");
+
         submitButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -55,7 +55,18 @@ public class AddEmployeeWindow extends JFrame {
             }
         });
         formPanel.add(submitButton);
+
+        // add return button
+        JButton returnButton = new JButton("Retour");
+        returnButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
     }
+
+
 
     private void insertData(String firstName, String lastName, String email, String salary) {
         String url = "jdbc:mysql://localhost:3306/testJava";
