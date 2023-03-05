@@ -192,9 +192,22 @@ public class ManageEmployeesWindow extends JFrame{
                             int row = table.getSelectedRow();
                             int id = (int) table.getValueAt(row, 0);
                             try{
-                                Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/testJava", "root", "");
-                                Statement statement = connection.createStatement();
-                                statement.executeUpdate("DELETE FROM employees WHERE id = " + id);
+                                // alert the user that the employee has been deleted
+                                // validate the deletion
+                                int dialogResult = JOptionPane.showConfirmDialog(null, "Voulez-vous vraiment supprimer cet employé?", "Attention", JOptionPane.YES_NO_OPTION);
+                                if(dialogResult == JOptionPane.YES_OPTION){
+                                    // delete the employee
+                                    try{
+                                        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/testJava", "root", "");
+                                        Statement statement = connection.createStatement();
+                                        statement.executeUpdate("DELETE FROM employees WHERE id = " + id);
+                                        JOptionPane.showMessageDialog(null, "L'employé a été supprimé avec succès");
+                                        model.removeRow(row);
+                                    }
+                                    catch(Exception ex){
+                                        ex.printStackTrace();
+                                    }
+                                }
                                 model.removeRow(row);
                             }
                             catch(Exception ex){

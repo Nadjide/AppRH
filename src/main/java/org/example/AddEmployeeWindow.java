@@ -64,6 +64,7 @@ public class AddEmployeeWindow extends JFrame {
                 dispose();
             }
         });
+        formPanel.add(returnButton);
     }
 
 
