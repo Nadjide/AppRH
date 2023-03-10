@@ -14,213 +14,116 @@ public class ManageEmployeesWindow extends JFrame{
 
     public ManageEmployeesWindow() {
         setTitle("Gestion des employés");
-        setSize(800, 600);
+        setSize(600, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout());
+        setLayout(new FlowLayout());
 
-        // show all employees in a table
-        // add a button to delete an employee
-        // add a button to edit an employee
-        // add a button to search for an employee
-        // add a button to return to the main window
+        // see all the employees in my database
 
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton deleteButton = new JButton("Supprimer");
-        panel.add(deleteButton);
-        JButton editButton = new JButton("Modifier");
-        panel.add(editButton);
-        JButton showEmployeesButton = new JButton("Afficher les employés");
-        panel.add(showEmployeesButton);
-        JButton searchButton = new JButton("Rechercher");
-        panel.add(searchButton);
+        // Create the table
+        JTable employeesTable = new JTable();
+        DefaultTableModel employeesTableModel = new DefaultTableModel();
+        employeesTableModel.addColumn("ID");
+        employeesTableModel.addColumn("Prénom");
+        employeesTableModel.addColumn("Nom");
+        employeesTableModel.addColumn("Email");
+        employeesTableModel.addColumn("Adresse");
+        employeesTableModel.addColumn("Téléphone");
+        employeesTableModel.addColumn("Date de naissance");
+        employeesTableModel.addColumn("Date d'embauche");
+        employeesTable.setModel(employeesTableModel);
+        JScrollPane employeesTableScrollPane = new JScrollPane(employeesTable);
+        employeesTableScrollPane.setPreferredSize(new Dimension(550, 200));
+        add(employeesTableScrollPane);
+
+        // create a table in the window
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/restaurant", "root", "");
+            Statement statement = connection.createStatement();
+            ResultSet employees = statement.executeQuery("SELECT * FROM employees");
+            while (employees.next()) {
+                int id = employees.getInt("id");
+                String firstName = employees.getString("first_name");
+                String lastName = employees.getString("last_name");
+                String email = employees.getString("email");
+                String address = employees.getString("address");
+                String phone = employees.getString("phone");
+                String birthDate = employees.getString("birth_date");
+                String hireDate = employees.getString("hire_date");
+                employeesTableModel.addRow(new Object[]{id, firstName, lastName, email, address, phone, birthDate, hireDate});
+            }
+        } catch (Exception exception) {
+            System.out.println(exception.getMessage());
+        }
+
+        // create a button to add an employee
         JButton addEmployeeButton = new JButton("Ajouter un employé");
-        panel.add(addEmployeeButton);
-        JButton returnButton = new JButton("Retour");
-        panel.add(returnButton);
-        add(panel, BorderLayout.SOUTH);
-
-        // add a button to return to the main window
-        returnButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // return to the main window
-                dispose();
-            }
-        });
-
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // search for an employee
-                String search = JOptionPane.showInputDialog("Rechercher un employé");
-                try{
-                    Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/testJava", "root", "");
-                    Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery("SELECT * FROM employees WHERE first_Name = '" + search + "' OR last_Name = '" + search + "' OR email = '" + search + "'");
-
-                    // create a table to display the employees
-                    DefaultTableModel model = new DefaultTableModel();
-                    model.setColumnIdentifiers(new String[]{"ID", "Nom", "Prénom", "Email", "Salaire"});
-
-                    while(resultSet.next()){
-                        model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("first_Name"),
-                                resultSet.getString("last_Name"), resultSet.getString("email"), resultSet.getInt("salary")});
-                    }
-
-                    //create a table to display the employees
-                    JTable table = new JTable();
-                    table.setModel(model);
-                    table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-                    table.setFillsViewportHeight(true);
-                    add(new JScrollPane(table), BorderLayout.CENTER);
-                    setVisible(true);
-
-                    // add a button to edit an employee
-
-                    editButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            // edit the selected employee
-                            int row = table.getSelectedRow();
-                            int id = (int) table.getValueAt(row, 0);
-                            String firstName = (String) table.getValueAt(row, 1);
-                            String lastName = (String) table.getValueAt(row, 2);
-                            String email = (String) table.getValueAt(row, 3);
-                            int salary = (int) table.getValueAt(row, 4);
-                            try{
-                                Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/testJava", "root", "");
-                                Statement statement = connection.createStatement();
-                                statement.executeUpdate("UPDATE employees SET first_Name = '" + firstName + "', last_Name = '" + lastName + "', email = '" + email + "', salary = " + salary + " WHERE id = " + id);
-                                model.removeRow(row);
-                            }
-                            catch(Exception ex){
-                                ex.printStackTrace();
-                            }
-                        }
-                    });
-                    // add a button to delete an employee
-                    deleteButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            // delete the selected employee
-                            int row = table.getSelectedRow();
-                            int id = (int) table.getValueAt(row, 0);
-                            try{
-                                Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/testJava", "root", "");
-                                Statement statement = connection.createStatement();
-                                statement.executeUpdate("DELETE FROM employees WHERE id = " + id);
-                                model.removeRow(row);
-                            }
-                            catch(Exception ex){
-                                ex.printStackTrace();
-                            }
-                        }
-                    });
-                }
-                catch(Exception ex){
-                    ex.printStackTrace();
-                }
-            }
-        });
-
-
         addEmployeeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // show the add employee window
-                AddEmployeeWindow addEmployeeWindow = new AddEmployeeWindow();
-                addEmployeeWindow.setVisible(true);
+                new AddEmployeeWindow();
             }
         });
+        add(addEmployeeButton);
 
-        showEmployeesButton.addActionListener(new ActionListener() {
+        // create a button to delete an employee
+        JButton deleteEmployeeButton = new JButton("Supprimer un employé");
+        deleteEmployeeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               // display all employees in a table
-
-                try{
-                    Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/testJava", "root", "");
-                    Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery("SELECT * FROM employees");
-
-                    // create a table to display the employees
-                    DefaultTableModel model = new DefaultTableModel();
-                    model.setColumnIdentifiers(new String[]{"ID", "Nom", "Prénom", "Email", "Salaire"});
-
-                    while(resultSet.next()){
-                        model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("first_Name"),
-                                resultSet.getString("last_Name"), resultSet.getString("email"), resultSet.getInt("salary")});
+                int selectedRow = employeesTable.getSelectedRow();
+                if (selectedRow == -1) {
+                    JOptionPane.showMessageDialog(null, "Veuillez sélectionner un employé");
+                } else {
+                    int employeeId = (int) employeesTableModel.getValueAt(selectedRow, 0);
+                    int dialogResult = JOptionPane.showConfirmDialog(null, "Êtes-vous sûr de vouloir supprimer cet employé ?");
+                    if (dialogResult == JOptionPane.YES_OPTION) {
+                        try {
+                            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/testjava", "root", "");
+                            Statement statement = connection.createStatement();
+                            statement.executeUpdate("DELETE FROM employees WHERE id = " + employeeId);
+                            employeesTableModel.removeRow(selectedRow);
+                        } catch (Exception exception) {
+                            System.out.println(exception.getMessage());
+                        }
                     }
-
-                    //create a table to display the employees
-                    JTable table = new JTable();
-                    table.setModel(model);
-                    table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-                    table.setFillsViewportHeight(true);
-                    add(new JScrollPane(table), BorderLayout.CENTER);
-                    setVisible(true);
-
-                    // add a button to edit an employee
-
-                    editButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            // edit the selected employee
-                            int row = table.getSelectedRow();
-                            int id = (int) table.getValueAt(row, 0);
-                            String firstName = (String) table.getValueAt(row, 1);
-                            String lastName = (String) table.getValueAt(row, 2);
-                            String email = (String) table.getValueAt(row, 3);
-                            int salary = (int) table.getValueAt(row, 4);
-                            try{
-                                Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/testJava", "root", "");
-                                Statement statement = connection.createStatement();
-                                statement.executeUpdate("UPDATE employees SET first_Name = '" + firstName + "', last_Name = '" + lastName + "', email = '" + email + "', salary = " + salary + " WHERE id = " + id);
-                                model.removeRow(row);
-                            }
-                            catch(Exception ex){
-                                ex.printStackTrace();
-                            }
-                        }
-                    });
-                    // add a button to delete an employee
-                    deleteButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            // delete the selected employee
-                            int row = table.getSelectedRow();
-                            int id = (int) table.getValueAt(row, 0);
-                            try{
-                                // alert the user that the employee has been deleted
-                                // validate the deletion
-                                int dialogResult = JOptionPane.showConfirmDialog(null, "Voulez-vous vraiment supprimer cet employé?", "Attention", JOptionPane.YES_NO_OPTION);
-                                if(dialogResult == JOptionPane.YES_OPTION){
-                                    // delete the employee
-                                    try{
-                                        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/testJava", "root", "");
-                                        Statement statement = connection.createStatement();
-                                        statement.executeUpdate("DELETE FROM employees WHERE id = " + id);
-                                        JOptionPane.showMessageDialog(null, "L'employé a été supprimé avec succès");
-                                        model.removeRow(row);
-                                    }
-                                    catch(Exception ex){
-                                        ex.printStackTrace();
-                                    }
-                                }
-                                model.removeRow(row);
-                            }
-                            catch(Exception ex){
-                                ex.printStackTrace();
-                            }
-                        }
-                    });
-                }
-                catch(Exception ex){
-                    ex.printStackTrace();
                 }
             }
         });
+        add(deleteEmployeeButton);
+
+        // create a button to modify an employee
+        JButton modifyEmployeeButton = new JButton("Modifier un employé");
+        modifyEmployeeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = employeesTable.getSelectedRow();
+                if (selectedRow == -1) {
+                    JOptionPane.showMessageDialog(null, "Veuillez sélectionner un employé");
+                } else {
+                    int employeeId = (int) employeesTableModel.getValueAt(selectedRow, 0);
+                    new ModifyEmployeeWindow(employeeId);
+                }
+            }
+            });
+
+
+        // watch the details of an employee
+        JButton seeDetailsButton = new JButton("Voir les détails");
+        seeDetailsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = employeesTable.getSelectedRow();
+                if (selectedRow == -1) {
+                    JOptionPane.showMessageDialog(null, "Veuillez sélectionner un employé");
+                } else {
+                    int employeeId = (int) employeesTableModel.getValueAt(selectedRow, 0);
+                    new EmployeeDetailsWindow(employeeId);
+                }
+            }
+        });
+
     }
     public static void main(String[] args) {
         new ManageEmployeesWindow();
