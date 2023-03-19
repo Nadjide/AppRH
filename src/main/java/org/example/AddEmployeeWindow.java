@@ -1,8 +1,5 @@
 package org.example;
 
-import com.mysql.cj.jdbc.StatementImpl;
-import com.mysql.cj.jdbc.StatementWrapper;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -32,17 +29,34 @@ public class AddEmployeeWindow extends JFrame {
         JLabel emailLabel = new JLabel("Email");
         JTextField emailField = new JTextField();
         emailField.setMaximumSize(new Dimension(400, 50));
-        JLabel salaryLabel = new JLabel("Salaire");
-        JTextField salaryField = new JTextField();
-        salaryField.setMaximumSize(new Dimension(400, 50));
+        JLabel adressLabel = new JLabel("Adresse");
+        JTextField addressField = new JTextField();
+        addressField.setMaximumSize(new Dimension(400, 50));
+        JLabel phoneLabel = new JLabel("Téléphone");
+        JTextField phoneField = new JTextField();
+        phoneField.setMaximumSize(new Dimension(400, 50));
+        JLabel birthDateLabel = new JLabel("Date de naissance");
+        JTextField birthDateField = new JTextField();
+        birthDateField.setMaximumSize(new Dimension(400, 50));
+        JLabel hireDateLabel = new JLabel("Date d'embauche");
+        JTextField hireDateField = new JTextField();
+        hireDateField.setMaximumSize(new Dimension(400, 50));
+
+
         formPanel.add(firstNameLabel);
         formPanel.add(firstNameField);
         formPanel.add(lastNameLabel);
         formPanel.add(lastNameField);
         formPanel.add(emailLabel);
         formPanel.add(emailField);
-        formPanel.add(salaryLabel);
-        formPanel.add(salaryField);
+        formPanel.add(adressLabel);
+        formPanel.add(addressField);
+        formPanel.add(phoneLabel);
+        formPanel.add(phoneField);
+        formPanel.add(birthDateLabel);
+        formPanel.add(birthDateField);
+        formPanel.add(hireDateLabel);
+        formPanel.add(hireDateField);
         add(formPanel);
 
         JButton submitButton = new JButton("Ajouter");
@@ -51,7 +65,7 @@ public class AddEmployeeWindow extends JFrame {
 
             public void actionPerformed(ActionEvent e) {
                 insertData(firstNameField.getText(), lastNameField.getText(),
-                        emailField.getText(), salaryField.getText());
+                        emailField.getText(), addressField.getText(), phoneField.getText(),birthDateField.getText(), hireDateField.getText());
             }
         });
         formPanel.add(submitButton);
@@ -64,18 +78,19 @@ public class AddEmployeeWindow extends JFrame {
                 dispose();
             }
         });
+        formPanel.add(returnButton);
     }
 
 
 
-    private void insertData(String firstName, String lastName, String email, String salary) {
+    private void insertData(String firstName, String lastName, String email,String addressField, String phoneFieldText, String birthDateFieldText, String hireDateFieldText) {
         String url = "jdbc:mysql://localhost:3306/testJava";
         String username = "root";
         String password = "";
         try {
             Connection connection = DriverManager.getConnection(url, username, password);
             Statement statement = connection.createStatement();
-            String sql = "INSERT INTO employees (first_name, last_name, email, salary) VALUES ('" + firstName + "', '" + lastName + "', '" + email + "', '" + salary + "')";
+            String sql = "INSERT INTO employees (first_name, last_name, email, address, phone, birth_date, hire_date) VALUES ('" + firstName + "', '" + lastName + "', '" + email + "', '" + addressField + "', '" + phoneFieldText + "', '" + birthDateFieldText + "', '" + hireDateFieldText + "')";
             statement.executeUpdate(sql);
             JOptionPane.showMessageDialog(null, "L'employé a été ajouté avec succès");
         } catch (SQLException throwables) {

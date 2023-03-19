@@ -14,6 +14,20 @@ public class MainWindow extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
+        // Add the welcome message
+        JPanel welcomePanel = new JPanel(new FlowLayout());
+        JLabel welcomeLabel = new JLabel("Bienvenue dans l'application de gestion des employés");
+        welcomePanel.add(welcomeLabel);
+        add(welcomePanel, BorderLayout.NORTH);
+
+        // Add a short description of the company
+        JPanel descriptionPanel = new JPanel(new FlowLayout());
+        JLabel descriptionLabel = new JLabel("Cette application vous permet de gérer les employés de votre entreprise");
+        descriptionPanel.add(descriptionLabel);
+        add(descriptionPanel, BorderLayout.CENTER);
+
+
+
         JPanel buttonPanel = new JPanel(new FlowLayout());
         JButton addEmployeeButton = new JButton("Nouvel employé");
         addEmployeeButton.addActionListener(new ActionListener() {
