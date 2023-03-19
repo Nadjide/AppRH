@@ -172,6 +172,36 @@ public class ManageEmployeesWindow extends JFrame{
         });
         add(showDetailsButton);
 
+        // create a button to search an employee
+        JButton searchEmployeeButton = new JButton("Rechercher un employé");
+        searchEmployeeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String search = JOptionPane.showInputDialog("Entrez le NOM de l'employé à rechercher");
+                employeesTableModel.setRowCount(0);
+                try {
+                    Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/testjava", "root", "");
+                    Statement statement = connection.createStatement();
+                    // recherche par le nom
+                    ResultSet employees = statement.executeQuery("SELECT * FROM employees WHERE last_name LIKE '%" + search + "%'");
+                    while (employees.next()) {
+                        int id = employees.getInt("id");
+                        String firstName = employees.getString("first_name");
+                        String lastName = employees.getString("last_name");
+                        String email = employees.getString("email");
+                        String address = employees.getString("address");
+                        String phone = employees.getString("phone");
+                        String birthDate = employees.getString("birth_date");
+                        String hireDate = employees.getString("hire_date");
+                        employeesTableModel.addRow(new Object[]{id, firstName, lastName, email, address, phone, birthDate, hireDate});
+                    }
+                } catch (Exception exception) {
+                    System.out.println(exception.getMessage());
+                }
+            }
+        });
+        add(searchEmployeeButton);
+
     }
     public static void main(String[] args) {
         new ManageEmployeesWindow();
