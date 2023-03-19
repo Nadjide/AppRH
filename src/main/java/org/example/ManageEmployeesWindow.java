@@ -39,7 +39,7 @@ public class ManageEmployeesWindow extends JFrame{
 
         // create a table in the window
         try {
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/restaurant", "root", "");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/testjava", "root", "");
             Statement statement = connection.createStatement();
             ResultSet employees = statement.executeQuery("SELECT * FROM employees");
             while (employees.next()) {
@@ -57,15 +57,45 @@ public class ManageEmployeesWindow extends JFrame{
             System.out.println(exception.getMessage());
         }
 
-        // create a button to add an employee
+        // create a button redirecting to the add employee window
         JButton addEmployeeButton = new JButton("Ajouter un employé");
         addEmployeeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new AddEmployeeWindow();
+                AddEmployeeWindow addEmployeeWindow = new AddEmployeeWindow();
+                addEmployeeWindow.setVisible(true);
             }
         });
         add(addEmployeeButton);
+
+
+        // create a button to refresh the table
+        JButton refreshTableButton = new JButton("Rafraîchir la table");
+        refreshTableButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                employeesTableModel.setRowCount(0);
+                try {
+                    Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/testjava", "root", "");
+                    Statement statement = connection.createStatement();
+                    ResultSet employees = statement.executeQuery("SELECT * FROM employees");
+                    while (employees.next()) {
+                        int id = employees.getInt("id");
+                        String firstName = employees.getString("first_name");
+                        String lastName = employees.getString("last_name");
+                        String email = employees.getString("email");
+                        String address = employees.getString("address");
+                        String phone = employees.getString("phone");
+                        String birthDate = employees.getString("birth_date");
+                        String hireDate = employees.getString("hire_date");
+                        employeesTableModel.addRow(new Object[]{id, firstName, lastName, email, address, phone, birthDate, hireDate});
+                    }
+                } catch (Exception exception) {
+                    System.out.println(exception.getMessage());
+                }
+            }
+        });
+        add(refreshTableButton);
 
         // create a button to delete an employee
         JButton deleteEmployeeButton = new JButton("Supprimer un employé");
@@ -93,7 +123,7 @@ public class ManageEmployeesWindow extends JFrame{
         });
         add(deleteEmployeeButton);
 
-        // create a button to modify an employee
+        // create a button open the ModifyEmployeeWindow window
         JButton modifyEmployeeButton = new JButton("Modifier un employé");
         modifyEmployeeButton.addActionListener(new ActionListener() {
             @Override
@@ -103,26 +133,44 @@ public class ManageEmployeesWindow extends JFrame{
                     JOptionPane.showMessageDialog(null, "Veuillez sélectionner un employé");
                 } else {
                     int employeeId = (int) employeesTableModel.getValueAt(selectedRow, 0);
-                    new ModifyEmployeeWindow(employeeId);
+                    ModifyEmployeeWindow modifyEmployeeWindow = new ModifyEmployeeWindow(employeeId);
+                    modifyEmployeeWindow.setVisible(true);
                 }
             }
-            });
+        });
+        add(modifyEmployeeButton);
 
+        // create a return button
+        JButton returnButton = new JButton("Retour");
+        returnButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
+        add(returnButton);
 
-        // watch the details of an employee
-        JButton seeDetailsButton = new JButton("Voir les détails");
-        seeDetailsButton.addActionListener(new ActionListener() {
+        // Details of employees
+        JButton showDetailsButton = new JButton("Détails");
+        showDetailsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = employeesTable.getSelectedRow();
                 if (selectedRow == -1) {
                     JOptionPane.showMessageDialog(null, "Veuillez sélectionner un employé");
                 } else {
-                    int employeeId = (int) employeesTableModel.getValueAt(selectedRow, 0);
-                    new EmployeeDetailsWindow(employeeId);
+                    Object[] employeeDetails = new Object[8];
+                    for (int i = 0; i < 8; i++) {
+                        employeeDetails[i] = employeesTableModel.getValueAt(selectedRow, i);
+                    }
+                    String detailsMessage = String.format("ID: %d\nPrénom: %s\nNom: %s\nEmail: %s\nAdresse: %s\nTéléphone: %s\nDate de naissance: %s\nDate d'embauche: %s",
+                            employeeDetails[0], employeeDetails[1], employeeDetails[2], employeeDetails[3],
+                            employeeDetails[4], employeeDetails[5], employeeDetails[6], employeeDetails[7]);
+                    JOptionPane.showMessageDialog(null, detailsMessage, "Détails de l'employé", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         });
+        add(showDetailsButton);
 
     }
     public static void main(String[] args) {
