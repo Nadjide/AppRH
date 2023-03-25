@@ -1,10 +1,17 @@
 package org.example;
 
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileOutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -32,6 +39,7 @@ public class ManageEmployeesWindow extends JFrame{
         employeesTableModel.addColumn("Téléphone");
         employeesTableModel.addColumn("Date de naissance");
         employeesTableModel.addColumn("Date d'embauche");
+        employeesTableModel.addColumn("Salaire");
         employeesTable.setModel(employeesTableModel);
         JScrollPane employeesTableScrollPane = new JScrollPane(employeesTable);
         employeesTableScrollPane.setPreferredSize(new Dimension(550, 200));
@@ -51,7 +59,8 @@ public class ManageEmployeesWindow extends JFrame{
                 String phone = employees.getString("phone");
                 String birthDate = employees.getString("birth_date");
                 String hireDate = employees.getString("hire_date");
-                employeesTableModel.addRow(new Object[]{id, firstName, lastName, email, address, phone, birthDate, hireDate});
+                Integer salary = employees.getInt("salary");
+                employeesTableModel.addRow(new Object[]{id, firstName, lastName, email, address, phone, birthDate, hireDate, salary});
             }
         } catch (Exception exception) {
             System.out.println(exception.getMessage());
@@ -88,7 +97,8 @@ public class ManageEmployeesWindow extends JFrame{
                         String phone = employees.getString("phone");
                         String birthDate = employees.getString("birth_date");
                         String hireDate = employees.getString("hire_date");
-                        employeesTableModel.addRow(new Object[]{id, firstName, lastName, email, address, phone, birthDate, hireDate});
+                        Integer salary = employees.getInt("salary");
+                        employeesTableModel.addRow(new Object[]{id, firstName, lastName, email, address, phone, birthDate, hireDate, salary});
                     }
                 } catch (Exception exception) {
                     System.out.println(exception.getMessage());
@@ -159,18 +169,60 @@ public class ManageEmployeesWindow extends JFrame{
                 if (selectedRow == -1) {
                     JOptionPane.showMessageDialog(null, "Veuillez sélectionner un employé");
                 } else {
-                    Object[] employeeDetails = new Object[8];
-                    for (int i = 0; i < 8; i++) {
+                    Object[] employeeDetails = new Object[9];
+                    for (int i = 0; i < 9; i++) {
                         employeeDetails[i] = employeesTableModel.getValueAt(selectedRow, i);
                     }
-                    String detailsMessage = String.format("ID: %d\nPrénom: %s\nNom: %s\nEmail: %s\nAdresse: %s\nTéléphone: %s\nDate de naissance: %s\nDate d'embauche: %s",
+                    String detailsMessage = String.format("ID: %s %nPrénom: %s %nNom: %s %nEmail: %s %nAdresse: %s %nTéléphone: %s %nDate de naissance: %s %nDate d'embauche: %s %nSalaire: %s",
                             employeeDetails[0], employeeDetails[1], employeeDetails[2], employeeDetails[3],
-                            employeeDetails[4], employeeDetails[5], employeeDetails[6], employeeDetails[7]);
+                            employeeDetails[4], employeeDetails[5], employeeDetails[6], employeeDetails[7], employeeDetails[8]);
                     JOptionPane.showMessageDialog(null, detailsMessage, "Détails de l'employé", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         });
         add(showDetailsButton);
+
+
+        // add button to generate PDF file of employees selected
+        JButton generatePDFButton = new JButton("Générer PDF");
+        generatePDFButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int[] selectedRows = employeesTable.getSelectedRows();
+                if (selectedRows.length == 0) {
+                    JOptionPane.showMessageDialog(null, "Veuillez sélectionner au moins un employé");
+                } else {
+                    try {
+                        Document document = new Document();
+                        PdfWriter.getInstance(document, new FileOutputStream("employees.pdf"));
+                        document.open();
+                        document.add(new Paragraph("Détails de l'employé"));
+                        document.add(new Paragraph(" "));
+                        PdfPTable table = new PdfPTable(9);
+                        table.addCell("ID");
+                        table.addCell("Prénom");
+                        table.addCell("Nom");
+                        table.addCell("Email");
+                        table.addCell("Adresse");
+                        table.addCell("Téléphone");
+                        table.addCell("Date de naissance");
+                        table.addCell("Date d'embauche");
+                        table.addCell("Salaire");
+                        for (int selectedRow : selectedRows) {
+                            for (int j = 0; j < 9; j++) {
+                                table.addCell(employeesTableModel.getValueAt(selectedRow, j).toString());
+                            }
+                        }
+                        document.add(table);
+                        document.close();
+                        JOptionPane.showMessageDialog(null, "Le fichier PDF a été généré avec succès");
+                    } catch (Exception exception) {
+                        System.out.println(exception.getMessage());
+                    }
+                }
+            }
+        });
+        add(generatePDFButton);
 
         // create a button to search an employee
         JButton searchEmployeeButton = new JButton("Rechercher un employé");
@@ -193,7 +245,8 @@ public class ManageEmployeesWindow extends JFrame{
                         String phone = employees.getString("phone");
                         String birthDate = employees.getString("birth_date");
                         String hireDate = employees.getString("hire_date");
-                        employeesTableModel.addRow(new Object[]{id, firstName, lastName, email, address, phone, birthDate, hireDate});
+                        Integer salary = employees.getInt("salary");
+                        employeesTableModel.addRow(new Object[]{id, firstName, lastName, email, address, phone, birthDate, hireDate, salary});
                     }
                 } catch (Exception exception) {
                     System.out.println(exception.getMessage());

@@ -52,6 +52,20 @@ public class MainWindow extends JFrame{
         buttonPanel.add(manageEmployeesButton);
 
         add(buttonPanel, BorderLayout.SOUTH);
+
+        JButton salaryButton = new JButton("Gestion des salaires");
+
+        salaryButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Show the manage employees window
+                SalaryWindow salaryWindow = new SalaryWindow();
+                salaryWindow.setVisible(true);
+            }
+        });
+
+        buttonPanel.add(salaryButton);
+        add(buttonPanel, BorderLayout.SOUTH);
     }
 
     public static void main(String[] args) {

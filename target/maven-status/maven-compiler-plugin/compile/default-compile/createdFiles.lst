@@ -1,3 +1,5 @@
+org\example\SalaryWindow.class
+org\example\ManageEmployeesWindow$8.class
 org\example\ManageEmployeesWindow$1.class
 org\example\AddEmployeeWindow.class
 org\example\AddEmployeeWindow$1.class
@@ -7,6 +9,7 @@ org\example\ManageEmployeesWindow$4.class
 org\example\ModifyEmployeeWindow$1.class
 org\example\ManageEmployeesWindow$5.class
 org\example\ManageEmployeesWindow.class
+org\example\MainWindow$3.class
 org\example\ModifyEmployeeWindow$2.class
 org\example\MainWindow$2.class
 org\example\MainWindow.class
@@ -16,3 +19,4 @@ org\example\ManageEmployeesWindow$7.class
 org\example\AddEmployeeWindow$2.class
 org\example\ManageEmployeesWindow$2.class
 org\example\ModifyEmployeeWindow.class
+org\example\SalaryWindow$1.class
