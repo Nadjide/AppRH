@@ -4,10 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class AddEmployeeWindow extends JFrame {
 
@@ -41,6 +38,9 @@ public class AddEmployeeWindow extends JFrame {
         JLabel hireDateLabel = new JLabel("Date d'embauche");
         JTextField hireDateField = new JTextField();
         hireDateField.setMaximumSize(new Dimension(400, 50));
+        JLabel salaryLabel = new JLabel("Salaire");
+        JTextField salaryField = new JTextField();
+        salaryField.setMaximumSize(new Dimension(400, 50));
 
 
         formPanel.add(firstNameLabel);
@@ -57,6 +57,8 @@ public class AddEmployeeWindow extends JFrame {
         formPanel.add(birthDateField);
         formPanel.add(hireDateLabel);
         formPanel.add(hireDateField);
+        formPanel.add(salaryLabel);
+        formPanel.add(salaryField);
         add(formPanel);
 
         JButton submitButton = new JButton("Ajouter");
@@ -65,7 +67,7 @@ public class AddEmployeeWindow extends JFrame {
 
             public void actionPerformed(ActionEvent e) {
                 insertData(firstNameField.getText(), lastNameField.getText(),
-                        emailField.getText(), addressField.getText(), phoneField.getText(),birthDateField.getText(), hireDateField.getText());
+                        emailField.getText(), addressField.getText(), phoneField.getText(),birthDateField.getText(), hireDateField.getText(), salaryField.getText());
             }
         });
         formPanel.add(submitButton);
@@ -83,20 +85,29 @@ public class AddEmployeeWindow extends JFrame {
 
 
 
-    private void insertData(String firstName, String lastName, String email,String addressField, String phoneFieldText, String birthDateFieldText, String hireDateFieldText) {
+    private void insertData(String firstName, String lastName, String email,String addressField, String phoneFieldText, String birthDateFieldText, String hireDateFieldText, String salaryFieldText) {
         String url = "jdbc:mysql://localhost:3306/testJava";
         String username = "root";
         String password = "";
         try {
             Connection connection = DriverManager.getConnection(url, username, password);
-            Statement statement = connection.createStatement();
-            String sql = "INSERT INTO employees (first_name, last_name, email, address, phone, birth_date, hire_date) VALUES ('" + firstName + "', '" + lastName + "', '" + email + "', '" + addressField + "', '" + phoneFieldText + "', '" + birthDateFieldText + "', '" + hireDateFieldText + "')";
-            statement.executeUpdate(sql);
+            String sql = "INSERT INTO employees (first_name, last_name, email, address, phone, birth_date, hire_date, salary) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, firstName);
+            preparedStatement.setString(2, lastName);
+            preparedStatement.setString(3, email);
+            preparedStatement.setString(4, addressField);
+            preparedStatement.setString(5, phoneFieldText);
+            preparedStatement.setString(6, birthDateFieldText);
+            preparedStatement.setString(7, hireDateFieldText);
+            preparedStatement.setString(8, salaryFieldText);
+            preparedStatement.executeUpdate();
             JOptionPane.showMessageDialog(null, "L'employé a été ajouté avec succès");
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
+
     public static void main(String[] args) {
         new AddEmployeeWindow();
     }

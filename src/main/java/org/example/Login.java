@@ -7,7 +7,6 @@ import javax.swing.*;
 
 public class Login {
     private JFrame frame;
-    private JLabel labelUsername, labelPassword;
     private JTextField textUsername;
     private JPasswordField fieldPassword;
     private JButton buttonLogin;
@@ -17,18 +16,22 @@ public class Login {
     public Login() {
         createForm();
         createDatabaseConnection();
-        addComponentsToFrame();
         addActionListeners();
         displayForm();
     }
 
     private void createForm() {
         frame = new JFrame("Login Form");
-        labelUsername = new JLabel("Username: ");
-        labelPassword = new JLabel("Password: ");
+        frame.setLayout(new GridLayout(3, 2));
+        frame.add(new JLabel("Username: "));
         textUsername = new JTextField(20);
+        frame.add(textUsername);
+        frame.add(new JLabel("Password: "));
         fieldPassword = new JPasswordField(20);
+        frame.add(fieldPassword);
         buttonLogin = new JButton("Login");
+        frame.add(new Label());
+        frame.add(buttonLogin);
     }
 
     private void createDatabaseConnection() {
@@ -40,36 +43,23 @@ public class Login {
         }
     }
 
-    private void addComponentsToFrame() {
-        Container container = frame.getContentPane();
-        container.setLayout(new GridLayout(3, 2));
-        container.add(labelUsername);
-        container.add(textUsername);
-        container.add(labelPassword);
-        container.add(fieldPassword);
-        container.add(new Label());
-        container.add(buttonLogin);
-    }
-
     private void addActionListeners() {
-        buttonLogin.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String username = textUsername.getText();
-                char[] password = fieldPassword.getPassword();
-                try {
-                    String query = "SELECT * FROM Users WHERE username = '" + username + "' AND password = '" + new String(password) + "'";
-                    ResultSet rs = stmt.executeQuery(query);
-                    if (rs.next()) {
-                        JOptionPane.showMessageDialog(frame, "Login successful!");
-                        frame.dispose();
-                        MainWindow mainWindow = new MainWindow();
-                        mainWindow.setVisible(true);
-                    } else {
-                        JOptionPane.showMessageDialog(frame, "Login failed.");
-                    }
-                } catch (SQLException se) {
-                    se.printStackTrace();
+        buttonLogin.addActionListener(e -> {
+            String username = textUsername.getText();
+            char[] password = fieldPassword.getPassword();
+            try {
+                String query = "SELECT * FROM Users WHERE username = '" + username + "' AND password = '" + new String(password) + "'";
+                ResultSet rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                    JOptionPane.showMessageDialog(frame, "Login successful!");
+                    frame.dispose();
+                    MainWindow mainWindow = new MainWindow();
+                    mainWindow.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Login failed.");
                 }
+            } catch (SQLException se) {
+                se.printStackTrace();
             }
         });
     }
@@ -85,3 +75,4 @@ public class Login {
         new Login();
     }
 }
+
