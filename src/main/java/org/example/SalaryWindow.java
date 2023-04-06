@@ -25,10 +25,6 @@ public class SalaryWindow extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        double medianSalary = calculateMedianSalary();
-        JLabel medianSalaryLabel = new JLabel("Le salaire médian est de " + medianSalary + "€");
-        add(medianSalaryLabel, BorderLayout.NORTH);
-
         createTable();
         createSearchPanel();
 
@@ -44,6 +40,7 @@ public class SalaryWindow extends JFrame {
                 // Show the main window
                 MainWindow mainWindow = new MainWindow();
                 mainWindow.setVisible(true);
+                dispose();
             }
         });
         buttonPanel.add(returnButton);
@@ -118,33 +115,6 @@ public class SalaryWindow extends JFrame {
             }
         } catch (Exception exception) {
             System.out.println(exception.getMessage());
-        }
-    }
-
-    private double calculateMedianSalary() {
-        ArrayList<Double> salaries = new ArrayList<Double>();
-
-        try {
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/testjava", "root", "");
-            Statement statement = connection.createStatement();
-            ResultSet employees = statement.executeQuery("SELECT salary FROM employees");
-            while (employees.next()) {
-                double salary = employees.getDouble("salary");
-                salaries.add(salary);
-            }
-        } catch (Exception exception) {
-            System.out.println(exception.getMessage());
-        }
-
-        Collections.sort(salaries);
-
-        int size = salaries.size();
-        if (size % 2 == 0) {
-            return (salaries.get(size / 2) + salaries.get(size / 2 - 1)) / 2;
-        } else if (size > 0) {
-            return salaries.get(size / 2);
-        } else {
-            return (salaries.get(size / 2 - 1) + salaries.get(size / 2)) / 2;
         }
     }
 

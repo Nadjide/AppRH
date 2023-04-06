@@ -4,10 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 
 public class ModifyEmployeeWindow extends JFrame {
     public ModifyEmployeeWindow(int employeeId) {
@@ -20,8 +17,10 @@ public class ModifyEmployeeWindow extends JFrame {
         String[] employeeData = new String[9];
         try {
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/testjava", "root", "");
-            Statement statement = connection.createStatement();
-            ResultSet employee = statement.executeQuery("SELECT * FROM employees WHERE id = " + employeeId);
+            String query = "SELECT * FROM employees WHERE id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, employeeId);
+            ResultSet employee = preparedStatement.executeQuery();
             if (employee.next()) {
                 for (int i = 1; i <= 9; i++) {
                     employeeData[i - 1] = employee.getString(i);
@@ -76,14 +75,13 @@ public class ModifyEmployeeWindow extends JFrame {
         JTextField salaryTextField = new JTextField(employeeData[8]);
         add(salaryTextField);
 
-// Add buttons to submit the changes and cancel
+        // Add buttons to submit the changes and cancel
         JButton modifyButton = new JButton("Modifier");
         modifyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/testjava", "root", "");
-                    Statement statement = connection.createStatement();
 
                     String firstName = firstNameTextField.getText();
                     String lastName = lastNameTextField.getText();
@@ -94,8 +92,18 @@ public class ModifyEmployeeWindow extends JFrame {
                     String hireDate = hireDateTextField.getText();
                     Integer salary = Integer.parseInt(salaryTextField.getText());
 
-                    String updateQuery = "UPDATE employees SET first_name = '" + firstName + "', last_name = '" + lastName + "', email = '" + email + "', address = '" + address + "', phone = '" + phone + "', birth_date = '" + birthDate + "', hire_date = '" + hireDate + "', salary = " + salary + " WHERE id = " + employeeId;
-                    statement.executeUpdate(updateQuery);
+                    String updateQuery = "UPDATE employees SET first_name = ?, last_name = ?, email = ?, address = ?, phone = ?, birth_date = ?, hire_date = ?, salary = ? WHERE id = ?";
+                    PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
+                    preparedStatement.setString(1, firstName);
+                    preparedStatement.setString(2, lastName);
+                    preparedStatement.setString(3, email);
+                    preparedStatement.setString(4, address);
+                    preparedStatement.setString(5, phone);
+                    preparedStatement.setString(6, birthDate);
+                    preparedStatement.setString(7, hireDate);
+                    preparedStatement.setInt(8, salary);
+                    preparedStatement.setInt(9, employeeId);
+                    preparedStatement.executeUpdate();
 
                     JOptionPane.showMessageDialog(null, "Les informations de l'employé ont été mises à jour.");
                     dispose();

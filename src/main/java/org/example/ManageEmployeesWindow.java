@@ -2,8 +2,10 @@ package org.example;
 
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import javax.swing.*;
@@ -18,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class ManageEmployeesWindow extends JFrame{
+    private DefaultTableModel employeesTableModel;
 
     public ManageEmployeesWindow() {
         setTitle("Gestion des employés");
@@ -30,7 +33,7 @@ public class ManageEmployeesWindow extends JFrame{
 
         // Create the table
         JTable employeesTable = new JTable();
-        DefaultTableModel employeesTableModel = new DefaultTableModel();
+        DefaultTableModel employeesTableModel = new DefaultTableModel(); // Ajoutez le mot-clé "final" ici
         employeesTableModel.addColumn("ID");
         employeesTableModel.addColumn("Prénom");
         employeesTableModel.addColumn("Nom");
@@ -182,48 +185,6 @@ public class ManageEmployeesWindow extends JFrame{
         });
         add(showDetailsButton);
 
-
-        // add button to generate PDF file of employees selected
-        JButton generatePDFButton = new JButton("Générer PDF");
-        generatePDFButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int[] selectedRows = employeesTable.getSelectedRows();
-                if (selectedRows.length == 0) {
-                    JOptionPane.showMessageDialog(null, "Veuillez sélectionner au moins un employé");
-                } else {
-                    try {
-                        Document document = new Document();
-                        PdfWriter.getInstance(document, new FileOutputStream("employees.pdf"));
-                        document.open();
-                        document.add(new Paragraph("Détails de l'employé"));
-                        document.add(new Paragraph(" "));
-                        PdfPTable table = new PdfPTable(9);
-                        table.addCell("ID");
-                        table.addCell("Prénom");
-                        table.addCell("Nom");
-                        table.addCell("Email");
-                        table.addCell("Adresse");
-                        table.addCell("Téléphone");
-                        table.addCell("Date de naissance");
-                        table.addCell("Date d'embauche");
-                        table.addCell("Salaire");
-                        for (int selectedRow : selectedRows) {
-                            for (int j = 0; j < 9; j++) {
-                                table.addCell(employeesTableModel.getValueAt(selectedRow, j).toString());
-                            }
-                        }
-                        document.add(table);
-                        document.close();
-                        JOptionPane.showMessageDialog(null, "Le fichier PDF a été généré avec succès");
-                    } catch (Exception exception) {
-                        System.out.println(exception.getMessage());
-                    }
-                }
-            }
-        });
-        add(generatePDFButton);
-
         // create a button to search an employee
         JButton searchEmployeeButton = new JButton("Rechercher un employé");
         searchEmployeeButton.addActionListener(new ActionListener() {
@@ -255,7 +216,61 @@ public class ManageEmployeesWindow extends JFrame{
         });
         add(searchEmployeeButton);
 
+
+        // add button to generate PDF file of employees selected
+        JButton generatePDFButton = new JButton("Générer PDF");
+        generatePDFButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int[] selectedRows = employeesTable.getSelectedRows();
+                if (selectedRows.length == 0) {
+                    JOptionPane.showMessageDialog(null, "Veuillez sélectionner au moins un employé");
+                } else {
+                    try {
+                        Document document = new Document();
+                        PdfWriter.getInstance(document, new FileOutputStream("employees.pdf"));
+                        document.open();
+                        document.add(new Paragraph("Détails de l'employé"));
+                        document.add(new Paragraph(" "));
+                        for (int selectedRow : selectedRows) {
+                            Object[] employeeData = new Object[9];
+                            for (int j = 0; j < 9; j++) {
+                                employeeData[j] = employeesTableModel.getValueAt(selectedRow, j);
+                            }
+                            addEmployeeDetails(document, employeeData);
+                        }
+                        document.close();
+                        JOptionPane.showMessageDialog(null, "Le fichier PDF a été généré avec succès");
+                    } catch (Exception exception) {
+                        System.out.println(exception.getMessage());
+                    }
+                }
+            }
+        });
+        add(generatePDFButton);
     }
+
+    // Ajouter une méthode pour générer la fiche de poste d'un employé
+    private void addEmployeeDetails(Document document, Object[] employeeData) throws DocumentException {
+        Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
+        Font regularFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
+
+        String[] labels = {
+                "ID", "Prénom", "Nom", "Email", "Adresse", "Téléphone", "Date de naissance", "Date d'embauche", "Salaire"
+        };
+
+        for (int i = 0; i < labels.length; i++) {
+            Chunk label = new Chunk(labels[i] + ": ", boldFont);
+            Chunk value = new Chunk(employeeData[i].toString(), regularFont);
+            Paragraph paragraph = new Paragraph();
+            paragraph.add(label);
+            paragraph.add(value);
+            document.add(paragraph);
+        }
+
+        document.add(new Paragraph(" "));
+    }
+
     public static void main(String[] args) {
         new ManageEmployeesWindow();
     }
