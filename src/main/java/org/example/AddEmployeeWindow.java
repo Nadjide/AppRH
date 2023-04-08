@@ -6,9 +6,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
+
+import static com.twilio.example.ValidationExample.ACCOUNT_SID;
+import static com.twilio.example.ValidationExample.AUTH_TOKEN;
+
 public class AddEmployeeWindow extends JFrame {
 
+    public static final String ACCOUNT_SID = "AC000097bfbf09e438b81a9ac011f22627";
+    public static final String AUTH_TOKEN = "7181ff7e1f8e32f91fbf805cc76c7ab4";
+    public static final String TWILIO_NUMBER = "+15076371081";
+
     public AddEmployeeWindow() {
+
         setTitle("Nouvel employé");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -106,6 +118,23 @@ public class AddEmployeeWindow extends JFrame {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+
+        int input = JOptionPane.showConfirmDialog(null, "Voulez-vous envoyer un SMS à l'employé?", "Confirmation", JOptionPane.YES_NO_OPTION);
+        if (input == 0) {
+            Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+            Message message = Message.creator(new PhoneNumber(phoneFieldText), new PhoneNumber(TWILIO_NUMBER), "Bonjour " + firstName + ", bienvenue dans l'entreprise !").create();
+            System.out.println(message.getSid());
+        }
+    }
+
+    private void sendSms(String phoneNumber, String firstName, String lastName) {
+        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+        Message message = Message.creator(
+                        new PhoneNumber(phoneNumber),
+                        new PhoneNumber(TWILIO_NUMBER),
+                        "Bonjour " + firstName + " " + lastName + ", bienvenue dans l'entreprise !")
+                .create();
+        System.out.println("SMS envoyé avec succès. ID : " + message.getSid());
     }
 
     public static void main(String[] args) {

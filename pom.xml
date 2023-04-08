@@ -44,6 +44,11 @@
             <artifactId>Font-Awesome</artifactId>
             <version>4.3.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.twilio.sdk</groupId>
+            <artifactId>twilio</artifactId>
+            <version>9.2.5</version>
+        </dependency>
     </dependencies>
 
 </project>
