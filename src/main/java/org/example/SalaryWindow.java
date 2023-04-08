@@ -2,6 +2,7 @@ package org.example;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -64,7 +65,11 @@ public class SalaryWindow extends JFrame {
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
         add(searchPanel, BorderLayout.NORTH);
+
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(tableModel);
+        table.setRowSorter(sorter);
     }
+
 
     private void loadEmployees() {
         try {
@@ -90,31 +95,15 @@ public class SalaryWindow extends JFrame {
     }
 
     private void searchEmployees() {
-        // Clear the table
-        tableModel.setRowCount(0);
-
         String searchQuery = searchField.getText().trim();
 
-        try {
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/testjava", "root", "");
-            Statement statement = connection.createStatement();
-            String query = "SELECT * FROM employees WHERE first_name LIKE '%" + searchQuery + "%' OR last_name LIKE '%" + searchQuery + "%' OR email LIKE '%" + searchQuery + "%' OR address LIKE '%" + searchQuery + "%' OR phone LIKE '%"+ searchQuery + "%'";
-            ResultSet employees = statement.executeQuery(query);
-            while (employees.next()) {
-                int id = employees.getInt("id");
-                String firstName = employees.getString("first_name");
-                String lastName = employees.getString("last_name");
-                String email = employees.getString("email");
-                String address = employees.getString("address");
-                String phone = employees.getString("phone");
-                String birthDate = employees.getString("birth_date");
-                String hireDate = employees.getString("hire_date");
-                double salary = employees.getDouble("salary");
-                Object[] rowData = {id, firstName, lastName, email, address, phone, birthDate, hireDate, salary};
-                tableModel.addRow(rowData);
-            }
-        } catch (Exception exception) {
-            System.out.println(exception.getMessage());
+        TableRowSorter<DefaultTableModel> sorter = (TableRowSorter<DefaultTableModel>) table.getRowSorter();
+        if (searchQuery.length() == 0) {
+            sorter.setRowFilter(null);
+        } else {
+            // Utilisez un RowFilter.regexFilter pour filtrer les résultats
+            RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter("(?i)" + searchQuery);
+            sorter.setRowFilter(rowFilter);
         }
     }
 
